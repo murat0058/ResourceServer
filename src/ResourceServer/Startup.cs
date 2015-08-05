@@ -26,34 +26,56 @@ namespace ResourceServer
         {
             JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            //app.Map("/action", application =>
+            //{
+            //    application.Use(async (context, next) =>
+            //    {
+            //        await context.Response.WriteAsync("Resource");
+            //    });
+            //});
 
-            app.UseOwin(pipe =>
+            //app.UseOwin(pipe =>
+            //{
+            //    pipe(next =>
+            //    {
+            //        var builder = new AppBuilder();
+            //        var provider = app.ApplicationServices.GetService<IDataProtectionProvider>();
+
+            //        builder.Properties["security.DataProtectionProvider"] = new DataProtectionProviderDelegate(purposes =>
+            //        {
+            //            var dataProtection = provider.CreateProtector(string.Join(",", purposes));
+            //            return new DataProtectionTuple(dataProtection.Protect, dataProtection.Unprotect);
+            //        });
+
+            //        builder.UseIdentityServerBearerTokenAuthentication(
+            //            new IdentityServerBearerTokenAuthenticationOptions
+            //            {
+            //                Authority = "http://localhost:5000/core",
+            //                ValidationMode = ValidationMode.ValidationEndpoint
+            //            });
+
+            //        return builder.Build<AppFunc>();
+            //    });
+            //});
+
+            JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+
+            var options = new IdentityServerBearerTokenAuthenticationOptions
             {
-                pipe(next =>
+                Authority = "http://localhost:5000/core",
+                ValidationMode = ValidationMode.ValidationEndpoint
+            };
+
+            app.UseAppBuilder(builder => { builder.UseIdentityServerBearerTokenAuthentication(options); }, "ResourceServer");
+
+            app.Map("/action", application =>
+            {
+                application.Use(async (context, next) =>
                 {
-                    var builder = new AppBuilder();
-                    var provider = app.ApplicationServices.GetService<IDataProtectionProvider>();
-
-                    builder.Properties["security.DataProtectionProvider"] = new DataProtectionProviderDelegate(purposes =>
-                    {
-                        var dataProtection = provider.CreateProtector(string.Join(",", purposes));
-                        return new DataProtectionTuple(dataProtection.Protect, dataProtection.Unprotect);
-                    });
-
-                    builder.UseIdentityServerBearerTokenAuthentication(
-                        new IdentityServerBearerTokenAuthenticationOptions
-                        {
-                            Authority = "",
-                            ValidationMode = ValidationMode.ValidationEndpoint
-                        });
-
-                    return builder.Build<AppFunc>();
+                    await context.Response.WriteAsync("Resource");
                 });
             });
+
         }
     }
 }
