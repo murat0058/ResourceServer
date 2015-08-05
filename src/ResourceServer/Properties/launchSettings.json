@@ -10,7 +10,7 @@
     "web": {
       "commandName": "web",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5001",
+      "launchUrl": "http://localhost:5002",
       "sdkVersion": "dnx-clr-win-x86.1.0.0-beta5"
     }
   }
